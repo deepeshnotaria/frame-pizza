@@ -1,0 +1,66 @@
+/* Preloader Component */
+.preloader {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-preloader);
+    background-color: var(--color-black);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity var(--duration-slow) var(--ease-out-expo),
+                visibility var(--duration-slow);
+}
+
+.preloader--hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.preloader__content {
+    text-align: center;
+    width: 200px;
+}
+
+.preloader__text {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-grey-dark);
+    letter-spacing: 0.3em;
+    margin-bottom: var(--space-3);
+}
+
+.preloader__progress {
+    width: 100%;
+    height: 1px;
+    background-color: var(--color-grey-subtle);
+    overflow: hidden;
+}
+
+.preloader__bar {
+    height: 100%;
+    width: 0%;
+    background-color: var(--color-white);
+    transition: width 100ms linear;
+}
+
+.preloader__percent {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-white);
+    margin-top: var(--space-2);
+}
+
+/* Utility: Visually Hidden */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}

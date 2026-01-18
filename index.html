@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FRAME - The Architecture of Pizza</title>
+    <meta name="description"
+        content="FRAME - Where pizza becomes architecture. Artisanal slices crafted with precision and intention.">
+    <meta name="theme-color" content="#000000">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="FRAME - The Architecture of Pizza">
+    <meta property="og:description" content="Artisanal slices crafted with precision and intention.">
+    <meta property="og:type" content="website">
+
+    <!-- Preload critical assets -->
+    <link rel="preload" href="images/ezgif-frame-001.jpg" as="image">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/sections/hero.css">
+    <link rel="stylesheet" href="css/sections/blueprint.css">
+    <link rel="stylesheet" href="css/sections/critique.css">
+    <link rel="stylesheet" href="css/sections/acquisition.css">
+</head>
+
+<body>
+    <!-- Preloader -->
+    <div id="preloader" class="preloader">
+        <div class="preloader__content">
+            <span class="preloader__text">LOADING</span>
+            <div class="preloader__progress">
+                <div class="preloader__bar"></div>
+            </div>
+            <span class="preloader__percent">0%</span>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero">
+        <div class="hero__sticky">
+            <canvas id="hero-canvas" class="hero__canvas"></canvas>
+            <div class="hero__content">
+                <h1 class="hero__title">FRAME</h1>
+                <p class="hero__tagline">The Architecture of Pizza</p>
+            </div>
+            <span class="hero__scroll-hint">Scroll to explore</span>
+        </div>
+    </section>
+
+    <!-- Blueprint Section -->
+    <section id="blueprint" class="blueprint">
+        <div class="container">
+            <header class="blueprint__header">
+                <span class="section-label">Technical Specifications</span>
+                <h2 class="section-title">The Blueprint</h2>
+            </header>
+            <div class="blueprint__grid">
+                <article class="blueprint__card">
+                    <span class="blueprint__number">01</span>
+                    <h3 class="blueprint__title">Foundation</h3>
+                    <p class="blueprint__subtitle">72-Hour Fermented Dough</p>
+                    <ul class="blueprint__specs">
+                        <li>
+                            <span class="spec-key">hydration:</span>
+                            <span class="spec-value">68%</span>
+                        </li>
+                        <li>
+                            <span class="spec-key">fermentation:</span>
+                            <span class="spec-value">72hrs @ 4°C</span>
+                        </li>
+                        <li>
+                            <span class="spec-key">flour:</span>
+                            <span class="spec-value">Caputo Tipo 00</span>
+                        </li>
+                        <li>
+                            <span class="spec-key">method:</span>
+                            <span class="spec-value">Hand-stretched</span>
+                        </li>
+                    </ul>
+                </article>
+                <article class="blueprint__card">
+                    <span class="blueprint__number">02</span>
+                    <h3 class="blueprint__title">Topography</h3>
+                    <p class="blueprint__subtitle">San Marzano Base</p>
+                    <ul class="blueprint__specs">
+                        <li>
+                            <span class="spec-key">origin:</span>
+                            <span class="spec-value">D.O.P. Certified</span>
+                        </li>
+                        <li>
+                            <span class="spec-key">process:</span>
+                            <span class="spec-value">Hand-crushed</span>
+                        </li>
+                        <li>
+                            <span class="spec-key">seasoning:</span>
+                            <span class="spec-value">Sea salt, basil</span>
+                        </li>
+                        <li>
+                            <span class="spec-key">character:</span>
+                            <span class="spec-value">Low acidity</span>
+                        </li>
+                    </ul>
+                </article>
+                <article class="blueprint__card">
+                    <span class="blueprint__number">03</span>
+                    <h3 class="blueprint__title">Finish</h3>
+                    <p class="blueprint__subtitle">Curated Garnish</p>
+                    <ul class="blueprint__specs">
+                        <li>
+                            <span class="spec-key">cheese:</span>
+                            <span class="spec-value">Fior di Latte</span>
+                        </li>
+                        <li>
+                            <span class="spec-key">oil:</span>
+                            <span class="spec-value">Cold-pressed EVOO</span>
+                        </li>
+                        <li>
+                            <span class="spec-key">herbs:</span>
+                            <span class="spec-value">Basil chiffonade</span>
+                        </li>
+                        <li>
+                            <span class="spec-key">heat:</span>
+                            <span class="spec-value">Calabrian chili</span>
+                        </li>
+                    </ul>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Critique Section -->
+    <section id="critique" class="critique">
+        <div class="container">
+            <header class="critique__header">
+                <span class="section-label">Critical Reception</span>
+                <h2 class="section-title">The Critique</h2>
+            </header>
+            <div class="critique__grid">
+                <blockquote class="critique__quote">
+                    <p>A masterclass in restraint. Every element serves the whole.</p>
+                    <cite>The Food Architect</cite>
+                </blockquote>
+                <blockquote class="critique__quote">
+                    <p>They've deconstructed pizza and rebuilt it as sculpture.</p>
+                    <cite>Culinary Review</cite>
+                </blockquote>
+                <blockquote class="critique__quote">
+                    <p>The negative space between toppings speaks volumes.</p>
+                    <cite>Minimalist Dining</cite>
+                </blockquote>
+            </div>
+        </div>
+    </section>
+
+    <!-- Acquisition Section -->
+    <section id="acquisition" class="acquisition">
+        <div class="container">
+            <div class="acquisition__content">
+                <h2 class="acquisition__title">Today's Architecture</h2>
+                <p class="acquisition__text">Limited batch. Precision crafted. Available now.</p>
+                <button class="acquisition__cta" id="cta-button">
+                    <span class="cta__text">Find Today's Batch</span>
+                    <div class="cta__beam"></div>
+                </button>
+                <p class="acquisition__footer">Chicago, IL</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- GSAP from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+    <!-- Application Scripts -->
+    <script src="js/preloader.js"></script>
+    <script src="js/scroll-animation.js"></script>
+    <script src="js/effects.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>

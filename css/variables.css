@@ -1,0 +1,52 @@
+:root {
+    /* Colors - Brand Palette */
+    --color-black: #000000;
+    --color-white: #FFFFFF;
+    --color-grey: #E5E5E5;
+    --color-grey-dark: #888888;
+    --color-grey-subtle: rgba(255, 255, 255, 0.1);
+    --color-forest: #1A2F1A;
+    --color-matcha: #B3FF00;
+
+    /* Typography - Font Families */
+    --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+
+    /* Typography - Font Sizes (Fluid) */
+    --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+    --text-sm: clamp(0.875rem, 0.8rem + 0.375vw, 1rem);
+    --text-base: clamp(1rem, 0.9rem + 0.5vw, 1.125rem);
+    --text-lg: clamp(1.125rem, 1rem + 0.625vw, 1.5rem);
+    --text-xl: clamp(1.5rem, 1.2rem + 1.5vw, 2.5rem);
+    --text-2xl: clamp(2rem, 1.5rem + 2.5vw, 4rem);
+    --text-hero: clamp(4rem, 3rem + 8vw, 12rem);
+
+    /* Spacing - 8px Base Grid */
+    --space-1: 0.5rem;
+    --space-2: 1rem;
+    --space-3: 1.5rem;
+    --space-4: 2rem;
+    --space-5: 3rem;
+    --space-6: 4rem;
+    --space-7: 6rem;
+    --space-8: 8rem;
+    --space-9: 12rem;
+
+    /* Layout */
+    --container-max: 1400px;
+    --container-padding: clamp(1.5rem, 5vw, 6rem);
+    --grid-gap: clamp(1.5rem, 3vw, 3rem);
+
+    /* Animation */
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in-out-expo: cubic-bezier(0.87, 0, 0.13, 1);
+    --duration-fast: 150ms;
+    --duration-normal: 300ms;
+    --duration-slow: 600ms;
+
+    /* Z-Index Layers */
+    --z-base: 1;
+    --z-sticky: 10;
+    --z-overlay: 100;
+    --z-preloader: 1000;
+}

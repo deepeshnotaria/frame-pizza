@@ -1,0 +1,88 @@
+/* Blueprint Section - Technical Specifications */
+.blueprint {
+    background: var(--color-black);
+    padding: var(--space-9) 0;
+    position: relative;
+}
+
+.blueprint__header {
+    text-align: center;
+    margin-bottom: var(--space-7);
+}
+
+.blueprint__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--grid-gap);
+}
+
+@media (max-width: 968px) {
+    .blueprint__grid {
+        grid-template-columns: 1fr;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+}
+
+.blueprint__card {
+    padding: var(--space-5);
+    border: 1px solid var(--color-grey-subtle);
+    background: transparent;
+    transition: border-color var(--duration-normal) var(--ease-out-expo),
+                transform var(--duration-normal) var(--ease-out-expo);
+}
+
+.blueprint__card:hover {
+    border-color: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+}
+
+.blueprint__number {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-grey-dark);
+    display: block;
+    margin-bottom: var(--space-3);
+}
+
+.blueprint__title {
+    font-family: var(--font-primary);
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: var(--color-white);
+    margin: 0 0 var(--space-1) 0;
+    letter-spacing: -0.01em;
+}
+
+.blueprint__subtitle {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-grey);
+    margin: 0 0 var(--space-4) 0;
+}
+
+.blueprint__specs {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+}
+
+.blueprint__specs li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: var(--space-1) 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.blueprint__specs li:last-child {
+    border-bottom: none;
+}
+
+.spec-key {
+    color: var(--color-grey-dark);
+}
+
+.spec-value {
+    color: var(--color-grey);
+    text-align: right;
+}

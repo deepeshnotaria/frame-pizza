@@ -1,0 +1,59 @@
+/* Critique Section - Social Proof */
+.critique {
+    background: var(--color-black);
+    padding: var(--space-9) 0;
+    border-top: 1px solid var(--color-grey-subtle);
+}
+
+.critique__header {
+    text-align: center;
+    margin-bottom: var(--space-7);
+}
+
+.critique__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--grid-gap);
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+@media (max-width: 968px) {
+    .critique__grid {
+        grid-template-columns: 1fr;
+        max-width: 600px;
+        gap: var(--space-5);
+    }
+}
+
+.critique__quote {
+    text-align: center;
+    padding: var(--space-4);
+}
+
+.critique__quote p {
+    font-family: var(--font-primary);
+    font-size: var(--text-lg);
+    font-weight: 400;
+    font-style: italic;
+    color: var(--color-white);
+    line-height: 1.5;
+    margin-bottom: var(--space-3);
+}
+
+.critique__quote p::before {
+    content: '"';
+}
+
+.critique__quote p::after {
+    content: '"';
+}
+
+.critique__quote cite {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-style: normal;
+    color: var(--color-grey-dark);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}

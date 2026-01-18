@@ -1,0 +1,145 @@
+/* Acquisition Section - CTA */
+.acquisition {
+    background: var(--color-forest);
+    padding: var(--space-9) 0;
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+}
+
+.acquisition__content {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.acquisition__title {
+    font-family: var(--font-primary);
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    color: var(--color-white);
+    margin: 0 0 var(--space-3) 0;
+    letter-spacing: -0.02em;
+}
+
+.acquisition__text {
+    font-family: var(--font-primary);
+    font-size: var(--text-lg);
+    color: var(--color-grey);
+    margin: 0 0 var(--space-6) 0;
+    opacity: 0.9;
+}
+
+/* CTA Button with Border Beam Effect */
+.acquisition__cta {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-3) var(--space-6);
+    background: transparent;
+    border: 1px solid var(--color-white);
+    color: var(--color-white);
+    font-family: var(--font-primary);
+    font-size: var(--text-base);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    overflow: hidden;
+    isolation: isolate;
+    transition: color var(--duration-normal) var(--ease-out-expo);
+}
+
+.acquisition__cta:hover {
+    color: var(--color-forest);
+}
+
+/* Button Background Fill on Hover */
+.acquisition__cta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--color-white);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform var(--duration-normal) var(--ease-out-expo);
+    z-index: -1;
+}
+
+.acquisition__cta:hover::before {
+    transform: scaleX(1);
+    transform-origin: left;
+}
+
+/* CTA Text */
+.cta__text {
+    position: relative;
+    z-index: 1;
+}
+
+/* Border Beam Container */
+.cta__beam {
+    position: absolute;
+    inset: -1px;
+    pointer-events: none;
+    overflow: hidden;
+    border-radius: inherit;
+}
+
+/* Rotating Beam Effect */
+.cta__beam::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 150%;
+    height: 150%;
+    background: conic-gradient(
+        from 0deg,
+        transparent 0deg,
+        var(--color-matcha) 15deg,
+        transparent 30deg,
+        transparent 180deg,
+        var(--color-matcha) 195deg,
+        transparent 210deg
+    );
+    transform: translate(-50%, -50%);
+    animation: beam-rotate 4s linear infinite;
+    opacity: 0;
+    transition: opacity var(--duration-normal);
+}
+
+.acquisition__cta:hover .cta__beam::before {
+    opacity: 0.8;
+}
+
+/* Mask to show only border */
+.cta__beam::after {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    background: var(--color-forest);
+    transition: opacity var(--duration-normal);
+}
+
+.acquisition__cta:hover .cta__beam::after {
+    opacity: 0;
+}
+
+@keyframes beam-rotate {
+    from {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+/* Footer Note */
+.acquisition__footer {
+    margin-top: var(--space-7);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 0.1em;
+}
