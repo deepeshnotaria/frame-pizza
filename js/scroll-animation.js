@@ -163,6 +163,17 @@ class ScrollFrameAnimation {
                 }
             });
         }
+
+        // Header fade in after hero text fades out
+        const header = document.getElementById('header');
+        if (header) {
+            ScrollTrigger.create({
+                trigger: this.container,
+                start: '40% top',
+                onEnter: () => header.classList.add('header--visible'),
+                onLeaveBack: () => header.classList.remove('header--visible')
+            });
+        }
     }
 
     destroy() {

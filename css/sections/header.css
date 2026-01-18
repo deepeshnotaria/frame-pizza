@@ -1,0 +1,52 @@
+/* Header - Sticky Navigation */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: var(--z-sticky);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-3) var(--container-padding);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duration-normal) var(--ease-out-expo);
+}
+
+.header--visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.header__logo {
+    font-family: var(--font-primary);
+    font-size: var(--text-lg);
+    font-weight: 700;
+    color: var(--color-white);
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: opacity var(--duration-fast);
+}
+
+.header__logo:hover {
+    opacity: 0.7;
+}
+
+.header__cta {
+    font-family: var(--font-primary);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--color-white);
+    text-decoration: none;
+    padding: var(--space-1) var(--space-3);
+    border: 1px solid var(--color-white);
+    transition: background var(--duration-normal) var(--ease-out-expo),
+                color var(--duration-normal) var(--ease-out-expo);
+}
+
+.header__cta:hover {
+    background: var(--color-white);
+    color: var(--color-black);
+}

@@ -90,6 +90,32 @@ function initSectionAnimations() {
             }
         });
     }
+
+    // Header CTA fade out when reaching acquisition section
+    const headerCta = document.querySelector('.header__cta');
+    const acquisitionSection = document.querySelector('.acquisition');
+    if (headerCta && acquisitionSection) {
+        ScrollTrigger.create({
+            trigger: acquisitionSection,
+            start: 'top bottom',
+            onEnter: () => {
+                gsap.to(headerCta, {
+                    opacity: 0,
+                    duration: 0.3,
+                    ease: 'power2.out'
+                });
+                headerCta.style.pointerEvents = 'none';
+            },
+            onLeaveBack: () => {
+                gsap.to(headerCta, {
+                    opacity: 1,
+                    duration: 0.3,
+                    ease: 'power2.out'
+                });
+                headerCta.style.pointerEvents = 'auto';
+            }
+        });
+    }
 }
 
 /**
