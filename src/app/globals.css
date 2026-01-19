@@ -1,0 +1,220 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-frame-bg text-white font-primary antialiased;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    @apply bg-matcha text-black;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-frame-bg;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-frame-border-light rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-grey-dark;
+  }
+}
+
+@layer components {
+  /* Technical Blueprint Grid Background */
+  .blueprint-grid {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .blueprint-grid-strong {
+    background-image:
+      linear-gradient(rgba(179, 255, 0, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(179, 255, 0, 0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  /* Glassmorphism card effect */
+  .glass-card {
+    @apply bg-white/[0.02] backdrop-blur-md border border-white/10;
+  }
+
+  .glass-card-hover {
+    @apply transition-all duration-300 ease-expo-out;
+  }
+
+  .glass-card-hover:hover {
+    @apply bg-white/[0.04] border-white/20 -translate-y-0.5;
+  }
+
+  /* Brutalist button style */
+  .btn-brutalist {
+    @apply relative px-8 py-4 font-mono text-sm uppercase tracking-widest;
+    @apply border border-white/20 bg-transparent text-white;
+    @apply transition-all duration-300 ease-expo-out;
+    @apply overflow-hidden;
+  }
+
+  .btn-brutalist::before {
+    content: '';
+    @apply absolute inset-0 bg-matcha -translate-x-full;
+    @apply transition-transform duration-300 ease-expo-out;
+  }
+
+  .btn-brutalist:hover::before {
+    @apply translate-x-0;
+  }
+
+  .btn-brutalist:hover {
+    @apply text-black border-matcha;
+  }
+
+  .btn-brutalist span {
+    @apply relative z-10;
+  }
+
+  /* Section label style */
+  .section-label {
+    @apply font-mono text-xs uppercase tracking-[0.3em] text-grey-dark;
+  }
+
+  /* Technical spec key-value style */
+  .spec-row {
+    @apply flex justify-between items-baseline py-2 border-b border-white/5;
+  }
+
+  .spec-key {
+    @apply font-mono text-xs uppercase tracking-wider text-grey-dark;
+  }
+
+  .spec-value {
+    @apply font-mono text-sm text-white;
+  }
+
+  /* Progress bar */
+  .progress-track {
+    @apply h-1 bg-white/10 rounded-full overflow-hidden;
+  }
+
+  .progress-fill {
+    @apply h-full bg-matcha rounded-full transition-all duration-500 ease-expo-out;
+  }
+
+  /* Input field style */
+  .input-field {
+    @apply w-full bg-transparent border-b border-white/20 py-3 px-0;
+    @apply font-mono text-sm text-white placeholder:text-grey-dark;
+    @apply focus:outline-none focus:border-matcha transition-colors duration-300;
+  }
+
+  /* Time slot button */
+  .time-slot {
+    @apply relative px-4 py-3 font-mono text-xs uppercase tracking-wider;
+    @apply border border-white/10 bg-white/[0.02];
+    @apply transition-all duration-200 ease-out;
+  }
+
+  .time-slot:not(:disabled):hover {
+    @apply border-matcha/50 bg-white/[0.04];
+  }
+
+  .time-slot.selected {
+    @apply border-matcha bg-matcha/10 text-matcha;
+  }
+
+  .time-slot:disabled {
+    @apply opacity-30 cursor-not-allowed;
+  }
+
+  /* Step indicator */
+  .step-indicator {
+    @apply flex items-center gap-2;
+  }
+
+  .step-dot {
+    @apply w-2 h-2 rounded-full bg-white/20 transition-all duration-300;
+  }
+
+  .step-dot.active {
+    @apply bg-matcha w-6;
+  }
+
+  .step-dot.completed {
+    @apply bg-matcha;
+  }
+}
+
+@layer utilities {
+  /* Text stroke effect for hero text */
+  .text-stroke {
+    -webkit-text-stroke: 2px rgba(255, 255, 255, 0.8);
+    -webkit-text-fill-color: transparent;
+  }
+
+  .text-stroke-solid {
+    color: white;
+    text-shadow: 0 0 60px rgba(255, 255, 255, 0.3);
+  }
+
+  .text-stroke-matcha {
+    -webkit-text-stroke: 2px rgba(179, 255, 0, 0.8);
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Fade mask for scroll effects */
+  .fade-mask-bottom {
+    mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+  }
+
+  /* Grid line accent */
+  .grid-line-h {
+    @apply h-px bg-gradient-to-r from-transparent via-white/10 to-transparent;
+  }
+
+  .grid-line-v {
+    @apply w-px bg-gradient-to-b from-transparent via-white/10 to-transparent;
+  }
+
+  /* Technical corner accents */
+  .corner-accent {
+    @apply absolute w-4 h-4 border-matcha/30;
+  }
+
+  .corner-accent-tl {
+    @apply top-0 left-0 border-t border-l;
+  }
+
+  .corner-accent-tr {
+    @apply top-0 right-0 border-t border-r;
+  }
+
+  .corner-accent-bl {
+    @apply bottom-0 left-0 border-b border-l;
+  }
+
+  .corner-accent-br {
+    @apply bottom-0 right-0 border-b border-r;
+  }
+}
