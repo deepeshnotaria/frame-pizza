@@ -51,7 +51,7 @@ export default function KDSDashboard() {
             .subscribe()
 
         return () => {
-            supabase.removeChannel(channel)
+            if (supabase) supabase.removeChannel(channel)
         }
     }, [])
 
