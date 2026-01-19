@@ -129,7 +129,8 @@ export default function PizzaEditor() {
             // 3. Upsert each pizza
             for (const p of pizzas) {
                 // Manually strip 'pizza_toppings' which is the relationship property
-                const { toppings, tempId, pizza_toppings, ...pizzaData } = p as any
+                const { toppings: rawToppings, tempId, pizza_toppings, ...pizzaData } = p as any
+                const toppings = rawToppings as Partial<PizzaTopping>[]
 
                 // Upsert Pizza
                 const { data: savedPizza, error } = await supabase
