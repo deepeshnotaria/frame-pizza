@@ -25,14 +25,18 @@ CREATE TABLE IF NOT EXISTS recipe_ingredients (
     UNIQUE(recipe_id, inventory_item_id)
 );
 
--- Topping-recipe links - connects pizza toppings to recipes
+-- Topping-recipe links - connects pizza toppings to recipes OR direct inventory items
 CREATE TABLE IF NOT EXISTS topping_recipe_links (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     pizza_topping_id UUID NOT NULL REFERENCES pizza_toppings(id) ON DELETE CASCADE,
-    recipe_id UUID NOT NULL REFERENCES recipes(id) ON DELETE CASCADE,
+    recipe_id UUID REFERENCES recipes(id) ON DELETE CASCADE,
+    inventory_item_id UUID REFERENCES inventory_items(id) ON DELETE CASCADE,
     quantity_per_pizza DECIMAL(10, 4) NOT NULL DEFAULT 1.0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    UNIQUE(pizza_topping_id, recipe_id)
+    CONSTRAINT one_of_recipe_or_item CHECK (
+        (recipe_id IS NOT NULL AND inventory_item_id IS NULL) OR
+        (recipe_id IS NULL AND inventory_item_id IS NOT NULL)
+    )
 );
 
 -- Indexes for performance

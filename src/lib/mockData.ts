@@ -14,13 +14,13 @@ export const mockTodaysPizza: DailyPizzaWithToppings = {
   current_batch: 14,
   created_at: new Date().toISOString(),
   pizza_toppings: [
-    { id: 't1', daily_pizza_id: 'mock-pizza-001', name: 'San Marzano Tomato Base', category: 'base', is_highlighted: false, created_at: '' },
-    { id: 't2', daily_pizza_id: 'mock-pizza-001', name: 'House-made Vegan Mozzarella', category: 'cheese', is_highlighted: true, created_at: '' },
-    { id: 't3', daily_pizza_id: 'mock-pizza-001', name: 'Vegan Frico Edge', category: 'cheese', is_highlighted: true, created_at: '' },
-    { id: 't4', daily_pizza_id: 'mock-pizza-001', name: 'Fresh Basil', category: 'topping', is_highlighted: false, created_at: '' },
-    { id: 't5', daily_pizza_id: 'mock-pizza-001', name: 'Calabrian Chili Oil', category: 'topping', is_highlighted: false, created_at: '' },
-    { id: 't6', daily_pizza_id: 'mock-pizza-001', name: 'Maldon Sea Salt', category: 'finish', is_highlighted: false, created_at: '' },
-    { id: 't7', daily_pizza_id: 'mock-pizza-001', name: 'Cold-pressed EVOO', category: 'finish', is_highlighted: false, created_at: '' },
+    { id: 't1', daily_pizza_id: 'mock-pizza-001', name: 'San Marzano Tomato Base', category: 'base', is_highlighted: false, is_customer_visible: true, created_at: '' },
+    { id: 't2', daily_pizza_id: 'mock-pizza-001', name: 'House-made Vegan Mozzarella', category: 'cheese', is_highlighted: true, is_customer_visible: true, created_at: '' },
+    { id: 't3', daily_pizza_id: 'mock-pizza-001', name: 'Vegan Frico Edge', category: 'cheese', is_highlighted: true, is_customer_visible: true, created_at: '' },
+    { id: 't4', daily_pizza_id: 'mock-pizza-001', name: 'Fresh Basil', category: 'topping', is_highlighted: false, is_customer_visible: true, created_at: '' },
+    { id: 't5', daily_pizza_id: 'mock-pizza-001', name: 'Calabrian Chili Oil', category: 'topping', is_highlighted: false, is_customer_visible: true, created_at: '' },
+    { id: 't6', daily_pizza_id: 'mock-pizza-001', name: 'Maldon Sea Salt', category: 'finish', is_highlighted: false, is_customer_visible: true, created_at: '' },
+    { id: 't7', daily_pizza_id: 'mock-pizza-001', name: 'Cold-pressed EVOO', category: 'finish', is_highlighted: false, is_customer_visible: true, created_at: '' },
   ]
 }
 

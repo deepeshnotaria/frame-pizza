@@ -26,6 +26,8 @@ export interface AnalyticsSummary {
 }
 
 export async function fetchOrders(startDate?: Date, endDate?: Date) {
+    if (!supabase) throw new Error('Supabase client is not initialized')
+
     let query = supabase
         .from('orders')
         .select(`

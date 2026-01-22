@@ -75,8 +75,8 @@ function SortableTab({ id, pizza, isActive, index, onClick, onRemove, showRemove
 
 // Extended topping type with recipe linking
 interface ToppingState extends Partial<PizzaTopping> {
-    recipe_id?: string
-    inventory_item_id?: string
+    recipe_id?: string | null
+    inventory_item_id?: string | null
     quantity_per_pizza?: number // quantity of the recipe (e.g., 0.5 batches? or grams?) -> standard is usually 'serving' or 'grams' depending on recipe yield unit
 }
 
@@ -366,19 +366,20 @@ export default function PizzaEditor() {
     }
 
     const handleSave = async () => {
-        setSaving(true)
         if (!supabase) return
+        const client = supabase
+        setSaving(true)
 
         try {
             // Identify IDs to keep to handle deletions correctly
-            const { data: existingData } = await supabase.from('daily_pizzas').select('id').eq('date', date)
+            const { data: existingData } = await client.from('daily_pizzas').select('id').eq('date', date)
             const existingIds = existingData?.map(d => d.id) || []
             const currentIds = pizzas.map(p => p.id).filter(Boolean) as string[]
 
             // Delete removed pizzas
             const idsToDelete = existingIds.filter(id => !currentIds.includes(id))
             if (idsToDelete.length > 0) {
-                const { error: deleteError } = await supabase.from('daily_pizzas').delete().in('id', idsToDelete)
+                const { error: deleteError } = await client.from('daily_pizzas').delete().in('id', idsToDelete)
                 if (deleteError) {
                     if (deleteError.code === '23503' || deleteError.message?.includes('violates foreign key')) {
                         throw new Error('Cannot delete pizzas that have associated orders. The pizzas have been restored.')
@@ -393,7 +394,7 @@ export default function PizzaEditor() {
                 const toppings = rawToppings as ToppingState[]
 
                 // Upsert Pizza
-                const { data: savedPizza, error } = await supabase
+                const { data: savedPizza, error } = await client
                     .from('daily_pizzas')
                     .upsert({ ...pizzaData, date: date, display_order: index })
                     .select()
@@ -403,7 +404,7 @@ export default function PizzaEditor() {
                 if (!savedPizza) return
 
                 // Get existing topping IDs to clean up old links
-                const { data: existingToppings } = await supabase
+                const { data: existingToppings } = await client
                     .from('pizza_toppings')
                     .select('id')
                     .eq('daily_pizza_id', savedPizza.id)
@@ -411,19 +412,19 @@ export default function PizzaEditor() {
                 if (existingToppings && existingToppings.length > 0) {
                     const existingToppingIds = existingToppings.map(t => t.id)
                     // Delete existing recipe links for these toppings
-                    await supabase
+                    await client
                         .from('topping_recipe_links')
                         .delete()
                         .in('pizza_topping_id', existingToppingIds)
                 }
 
                 // Delete all old toppings (cleanest for ordering)
-                await supabase.from('pizza_toppings').delete().eq('daily_pizza_id', savedPizza.id)
+                await client.from('pizza_toppings').delete().eq('daily_pizza_id', savedPizza.id)
 
                 // Insert new toppings and their recipe links in parallel
                 if (toppings.length > 0) {
                     await Promise.all(toppings.map(async (t) => {
-                        const { data: savedTopping, error: toppingError } = await supabase
+                        const { data: savedTopping, error: toppingError } = await client
                             .from('pizza_toppings')
                             .insert({
                                 daily_pizza_id: savedPizza.id,
@@ -442,7 +443,7 @@ export default function PizzaEditor() {
 
                         // Save Recipe/Inventory Link
                         if (savedTopping && (t.recipe_id || t.inventory_item_id) && t.quantity_per_pizza) {
-                            const { error: linkError } = await supabase
+                            const { error: linkError } = await client
                                 .from('topping_recipe_links')
                                 .insert({
                                     pizza_topping_id: savedTopping.id,

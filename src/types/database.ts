@@ -182,7 +182,8 @@ export interface RecipeIngredient {
 export interface ToppingRecipeLink {
   id: string
   pizza_topping_id: string
-  recipe_id: string
+  recipe_id: string | null
+  inventory_item_id: string | null
   quantity_per_pizza: number
   created_at: string
 }
