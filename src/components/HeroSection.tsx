@@ -277,7 +277,7 @@ export function HeroSection() {
           />
 
           {/* Inverted Text Overlay - uses mix-blend-difference for knockout effect */}
-          <div className="hero__content absolute inset-0 z-20 flex flex-col items-center justify-center pointer-events-none">
+          <div className="hero__content absolute inset-0 z-20 flex flex-col items-center justify-center pointer-events-none text-center px-6">
             <h1 className="hero__title font-display text-[clamp(4rem,3rem+8vw,12rem)] font-semibold tracking-[-0.02em] text-white mix-blend-difference">
               FRAME
             </h1>

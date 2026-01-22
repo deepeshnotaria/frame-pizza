@@ -43,7 +43,6 @@ const gridVariants = {
     x: 0,
     transition: {
       duration: 0.4,
-      when: "beforeChildren", // Ensure grid animates before children
       staggerChildren: 0.1
     }
   },
@@ -55,22 +54,63 @@ const gridVariants = {
 }
 
 export function DailyBlueprint({ pizzas }: DailyBlueprintProps) {
-  const { selectPizza, nextStep } = useOrderStore()
+  const { cart, addToCart, removeFromCart, updateQuantity, nextStep } = useOrderStore()
   const [selectedIndex, setSelectedIndex] = useState(0)
 
   const selectedPizza = pizzas[selectedIndex]
+  const hasMultiplePizzas = pizzas.length > 1
+
+  // Navigation functions for infinite loop
+  const goToPrev = () => {
+    setSelectedIndex((prev) => (prev === 0 ? pizzas.length - 1 : prev - 1))
+  }
+
+  const goToNext = () => {
+    setSelectedIndex((prev) => (prev === pizzas.length - 1 ? 0 : prev + 1))
+  }
+
+  // Swipe threshold for mobile gestures
+  const swipeThreshold = 50
+
+
+  // Get current quantity of selected pizza in cart (default to 0)
+  const cartItem = cart.find(item => item.pizza.id === selectedPizza.id)
+  const currentQuantity = cartItem ? cartItem.quantity : 0
+
+  // Calculate total cart value
+  const cartTotal = cart.reduce((total, item) => total + (item.pizza.price * item.quantity), 0)
+  const cartCount = cart.reduce((total, item) => total + item.quantity, 0)
+
+  const handleApplyQuantity = (newQty: number) => {
+    if (newQty === 0) {
+      removeFromCart(selectedPizza.id)
+    } else {
+      if (cartItem) {
+        updateQuantity(selectedPizza.id, newQty)
+      } else {
+        addToCart(selectedPizza, newQty)
+      }
+    }
+  }
 
   const handleContinue = () => {
-    selectPizza(selectedPizza)
+    // If cart is empty, add current pizza quantity 1? 
+    // Or require user to add first?
+    // Let's assume if they click continue and cart is empty, they want 1 of current pizza.
+    if (cart.length === 0) {
+      addToCart(selectedPizza, 1)
+    }
     nextStep()
   }
 
   // Group toppings by category
-  const toppingsByCategory = selectedPizza.pizza_toppings.reduce((acc, topping) => {
-    if (!acc[topping.category]) acc[topping.category] = []
-    acc[topping.category].push(topping)
-    return acc
-  }, {} as Record<string, typeof selectedPizza.pizza_toppings>)
+  const toppingsByCategory = selectedPizza.pizza_toppings
+    .filter(t => t.is_customer_visible !== false)
+    .reduce((acc, topping) => {
+      if (!acc[topping.category]) acc[topping.category] = []
+      acc[topping.category].push(topping)
+      return acc
+    }, {} as Record<string, typeof selectedPizza.pizza_toppings>)
 
   const categoryOrder = ['base', 'cheese', 'topping', 'finish']
   const categoryLabels: Record<string, string> = {
@@ -91,36 +131,106 @@ export function DailyBlueprint({ pizzas }: DailyBlueprintProps) {
       <motion.div variants={itemVariants} className="mb-12 text-center">
         <span className="section-label">Today's Architecture</span>
 
-        {/* PIZZA SECTOR */}
-        {pizzas.length > 1 && (
-          <div className="flex flex-wrap justify-center gap-2 mb-6 mt-4">
-            {pizzas.map((p, i) => (
-              <button
-                key={p.id}
-                onClick={() => setSelectedIndex(i)}
-                className={`px-4 py-2 border rounded-sm font-mono text-xs uppercase tracking-wider transition-all ${i === selectedIndex
-                  ? 'border-matcha text-matcha bg-matcha/10'
-                  : 'border-white/10 text-grey hover:border-white/30'
-                  }`}
+        {/* Carousel with arrows and swipe */}
+        <div className="relative mt-6">
+          {/* Left Arrow */}
+          {hasMultiplePizzas && (
+            <button
+              onClick={goToPrev}
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 
+                w-10 h-10 md:w-12 md:h-12 
+                flex items-center justify-center
+                border border-white/10 bg-white/[0.02]
+                rounded-sm
+                transition-all duration-300 ease-expo-out
+                hover:border-matcha/50 hover:bg-matcha/5 hover:text-matcha
+                active:scale-95
+                group"
+              aria-label="Previous pizza"
+            >
+              <svg
+                className="w-5 h-5 md:w-6 md:h-6 transition-transform duration-300 group-hover:-translate-x-0.5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
-                {p.name}
-              </button>
-            ))}
-          </div>
-        )}
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+          )}
 
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={selectedPizza.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.3 }}
-          >
-            <h1 className="mt-4 text-4xl md:text-5xl font-light tracking-tight">{selectedPizza.name}</h1>
-            <p className="mt-4 text-grey-dark max-w-xl mx-auto">{selectedPizza.description}</p>
-          </motion.div>
-        </AnimatePresence>
+          {/* Right Arrow */}
+          {hasMultiplePizzas && (
+            <button
+              onClick={goToNext}
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 
+                w-10 h-10 md:w-12 md:h-12 
+                flex items-center justify-center
+                border border-white/10 bg-white/[0.02]
+                rounded-sm
+                transition-all duration-300 ease-expo-out
+                hover:border-matcha/50 hover:bg-matcha/5 hover:text-matcha
+                active:scale-95
+                group"
+              aria-label="Next pizza"
+            >
+              <svg
+                className="w-5 h-5 md:w-6 md:h-6 transition-transform duration-300 group-hover:translate-x-0.5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          )}
+
+          {/* Swipeable content area */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={selectedPizza.id}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              drag={hasMultiplePizzas ? "x" : false}
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.1}
+              onDragEnd={(_, info) => {
+                if (info.offset.x > swipeThreshold) {
+                  goToPrev()
+                } else if (info.offset.x < -swipeThreshold) {
+                  goToNext()
+                }
+              }}
+              className={`${hasMultiplePizzas ? 'px-14 md:px-16 cursor-grab active:cursor-grabbing' : ''}`}
+            >
+              <h1 className="text-4xl md:text-5xl font-light tracking-tight select-none">
+                {selectedPizza.name}
+              </h1>
+              <p className="mt-4 text-grey-dark max-w-xl mx-auto select-none">
+                {selectedPizza.description}
+              </p>
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Pagination dots */}
+          {hasMultiplePizzas && (
+            <div className="flex justify-center gap-2 mt-6">
+              {pizzas.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setSelectedIndex(i)}
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${i === selectedIndex
+                    ? 'bg-matcha w-6'
+                    : 'bg-white/20 hover:bg-white/40'
+                    }`}
+                  aria-label={`Go to pizza ${i + 1}`}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </motion.div>
 
       {/* Main grid */}
@@ -231,12 +341,35 @@ export function DailyBlueprint({ pizzas }: DailyBlueprintProps) {
         </div>
       </motion.div>
 
-      {/* Action */}
-      <motion.div variants={itemVariants} className="mt-8 text-center">
-        <Button onClick={handleContinue} size="lg">
-          Reserve Unit — ${selectedPizza.price.toFixed(2)}
+      {/* Action Area */}
+      <motion.div variants={itemVariants} className="mt-8 flex flex-col items-center gap-6">
+
+        {/* Quantity Controls for Selected Pizza */}
+        <div className="flex items-center gap-4 p-2 bg-white/5 rounded-full border border-white/10">
+          <button
+            onClick={() => handleApplyQuantity(currentQuantity - 1)}
+            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors text-white"
+            disabled={currentQuantity === 0}
+          >
+            -
+          </button>
+          <span className="font-mono text-lg w-4 text-center">{currentQuantity}</span>
+          <button
+            onClick={() => handleApplyQuantity(currentQuantity + 1)}
+            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors text-white"
+            disabled={currentQuantity >= 4}
+          >
+            +
+          </button>
+        </div>
+
+        <Button onClick={handleContinue} size="lg" className="min-w-[300px]">
+          {cartCount > 0
+            ? `Choose Pickup Time — $${cartTotal.toFixed(2)}`
+            : `Add to Order — $${selectedPizza.price.toFixed(2)}`}
         </Button>
-        <p className="mt-4 font-mono text-[10px] text-grey-dark uppercase tracking-wider">
+
+        <p className="font-mono text-[10px] text-grey-dark uppercase tracking-wider">
           Pickup only • Chicago, IL
         </p>
       </motion.div>

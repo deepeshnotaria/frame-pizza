@@ -47,9 +47,13 @@ function getSlotStatus(slot: TimeSlot): 'available' | 'limited' | 'depleted' {
 export function TimeSlotGrid({ timeSlots }: TimeSlotGridProps) {
   const { selectedTimeSlot, selectTimeSlot, nextStep, prevStep } = useOrderStore()
 
+  console.log('TimeSlotGrid received slots:', timeSlots)
+
   // Group slots by period (Lunch/Dinner)
   const lunchSlots = timeSlots.filter(s => parseInt(s.start_time.split(':')[0], 10) < 15)
   const dinnerSlots = timeSlots.filter(s => parseInt(s.start_time.split(':')[0], 10) >= 15)
+
+  console.log('Lunch slots:', lunchSlots.length, 'Dinner slots:', dinnerSlots.length)
 
   const handleContinue = () => {
     if (selectedTimeSlot) {

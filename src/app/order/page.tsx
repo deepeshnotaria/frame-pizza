@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { OrderFlow } from '@/components/order/OrderFlow'
-import { getTodaysPizzas, getAvailableTimeSlots, supabase } from '@/lib/supabase'
+import { getTodaysPizzas, getAvailableTimeSlots, getLocalDateString, supabase } from '@/lib/supabase'
 import { mockTodaysPizza, mockTimeSlots } from '@/lib/mockData'
 import type { DailyPizzaWithToppings, TimeSlot } from '@/types/database'
 import { motion } from 'framer-motion'
@@ -32,7 +32,7 @@ export default function OrderPage() {
 
       setLoading(true)
       try {
-        const today = new Date().toISOString().split('T')[0]
+        const today = getLocalDateString(new Date())
 
         // Fetch today's pizza and time slots in parallel
         const [pizzaData, slotsData] = await Promise.all([

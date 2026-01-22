@@ -38,10 +38,10 @@ function formatTime(time: string): string {
 
 export function CheckoutManifest() {
   const {
-    selectedPizza,
+    cart,
     selectedTimeSlot,
-    quantity,
-    setQuantity,
+    updateQuantity,
+    removeFromCart,
     customerInfo,
     updateCustomerInfo,
     prevStep,
@@ -55,11 +55,23 @@ export function CheckoutManifest() {
 
   const [formErrors, setFormErrors] = useState<Record<string, string>>({})
 
-  if (!selectedPizza || !selectedTimeSlot) {
-    return null
+  // Redirect if no items or slot
+  if (cart.length === 0 || !selectedTimeSlot) {
+    // Should probably redirect back, but for now just prevent rendering errors
+    // Use an effect or just return null and let parent handle it? 
+    // Parent logic for "embedded" mode handles step, but "OrderPage" handles step...
+    // Let's just return a message or null.
+    // Ideally we should push them back to menu if cart is empty.
+    return (
+      <div className="text-center p-12">
+        <p className="text-grey-dark">Your cart is empty.</p>
+        <Button onClick={prevStep} className="mt-4">Return to Menu</Button>
+      </div>
+    )
   }
 
-  const subtotal = selectedPizza.price * quantity
+  // Calculate totals
+  const subtotal = cart.reduce((total, item) => total + (item.pizza.price * item.quantity), 0)
   const tax = subtotal * 0.1025 // Chicago sales tax
   const total = subtotal + tax
 
@@ -93,31 +105,23 @@ export function CheckoutManifest() {
     setError(null)
 
     try {
-      // Check if Supabase is configured
       if (supabase) {
-        // Use real Supabase connection
+        // Use real Supabase connection with multi-item support
         const order = await createOrder({
           customer_name: customerInfo.name,
           customer_email: customerInfo.email,
           customer_phone: customerInfo.phone,
           time_slot_id: selectedTimeSlot.id,
-          daily_pizza_id: selectedPizza.id,
-          quantity,
+          cartItems: cart.map(item => ({
+            daily_pizza_id: item.pizza.id,
+            quantity: item.quantity
+          }))
         })
 
         if (order) {
-          setCompletedOrder({
-            id: order.id,
-            batch_id: order.batch_id,
-            customer_name: order.customer_name,
-            customer_email: order.customer_email,
-            customer_phone: order.customer_phone,
-            time_slot_id: order.time_slot_id,
-            daily_pizza_id: order.daily_pizza_id,
-            quantity: order.quantity,
-            status: order.status,
-            created_at: order.created_at,
-          })
+          // order is likely the first created order row or a response object
+          // we just need it for the confirmation steps
+          setCompletedOrder(order)
           nextStep()
         }
       } else {
@@ -132,8 +136,8 @@ export function CheckoutManifest() {
           customer_email: customerInfo.email,
           customer_phone: customerInfo.phone,
           time_slot_id: selectedTimeSlot.id,
-          daily_pizza_id: selectedPizza.id,
-          quantity,
+          daily_pizza_id: cart[0].pizza.id, // Just pick one for the mock type
+          quantity: cart[0].quantity,
           status: 'confirmed' as const,
           created_at: new Date().toISOString(),
         }
@@ -229,43 +233,49 @@ export function CheckoutManifest() {
             </h2>
 
             <div className="space-y-4">
-              {/* Product */}
-              <div className="pb-4 border-b border-white/10">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="font-medium">{selectedPizza.name}</h3>
-                    <p className="font-mono text-xs text-grey-dark mt-1">
-                      10"×14" Detroit Style
-                    </p>
-                  </div>
-                  <span className="font-mono text-sm">
-                    ${selectedPizza.price.toFixed(2)}
-                  </span>
-                </div>
+              {/* Product List */}
+              <div className="pb-4 border-b border-white/10 space-y-4">
+                {cart.map((item) => (
+                  <div key={item.pizza.id} className="pb-4 last:pb-0 last:border-0 border-b border-white/5">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-medium text-sm">{item.pizza.name}</h3>
+                        <p className="font-mono text-[10px] text-grey-dark mt-1">
+                          10"×14" Detroit Style
+                        </p>
+                      </div>
+                      <span className="font-mono text-sm">
+                        ${(item.pizza.price * item.quantity).toFixed(2)}
+                      </span>
+                    </div>
 
-                {/* Quantity selector */}
-                <div className="mt-4 flex items-center gap-4">
-                  <span className="font-mono text-xs text-grey-dark uppercase">Qty</span>
-                  <div className="flex items-center border border-white/20">
-                    <button
-                      onClick={() => setQuantity(quantity - 1)}
-                      disabled={quantity <= 1}
-                      className="px-3 py-1 font-mono text-sm hover:bg-white/5 disabled:opacity-30 transition-colors"
-                    >
-                      −
-                    </button>
-                    <span className="px-4 py-1 font-mono text-sm border-x border-white/20">
-                      {quantity}
-                    </span>
-                    <button
-                      onClick={() => setQuantity(quantity + 1)}
-                      disabled={quantity >= 4}
-                      className="px-3 py-1 font-mono text-sm hover:bg-white/5 disabled:opacity-30 transition-colors"
-                    >
-                      +
-                    </button>
+                    {/* Quantity selector */}
+                    <div className="mt-2 flex items-center gap-4">
+                      <span className="font-mono text-[10px] text-grey-dark uppercase">Qty</span>
+                      <div className="flex items-center border border-white/20">
+                        <button
+                          onClick={() => {
+                            if (item.quantity > 1) updateQuantity(item.pizza.id, item.quantity - 1)
+                            else removeFromCart(item.pizza.id)
+                          }}
+                          className="px-2 py-0.5 font-mono text-xs hover:bg-white/5 transition-colors"
+                        >
+                          −
+                        </button>
+                        <span className="px-2 py-0.5 font-mono text-xs border-x border-white/20 min-w-[1.5rem] text-center">
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={() => updateQuantity(item.pizza.id, item.quantity + 1)}
+                          disabled={item.quantity >= 4}
+                          className="px-2 py-0.5 font-mono text-xs hover:bg-white/5 disabled:opacity-30 transition-colors"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                ))}
               </div>
 
               {/* Pickup */}

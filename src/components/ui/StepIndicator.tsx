@@ -18,14 +18,14 @@ export function StepIndicator({ currentStep }: StepIndicatorProps) {
   const currentIndex = steps.findIndex(s => s.key === currentStep)
 
   return (
-    <div className="flex items-center justify-center gap-6 py-6">
+    <div className="flex items-center justify-center gap-3 sm:gap-6 py-6">
       {steps.map((step, index) => {
         const isActive = index === currentIndex
         const isCompleted = index < currentIndex
 
         return (
-          <div key={step.key} className="flex items-center gap-6">
-            <div className="flex items-center gap-3">
+          <div key={step.key} className="flex items-center gap-2 sm:gap-6">
+            <div className="flex items-center gap-2 sm:gap-3">
               <motion.div
                 className={`
                   relative w-8 h-8 flex items-center justify-center
@@ -62,7 +62,7 @@ export function StepIndicator({ currentStep }: StepIndicatorProps) {
             </div>
             {index < steps.length - 1 && (
               <div className={`
-                w-8 lg:w-16 h-px
+                w-4 sm:w-8 lg:w-16 h-px
                 ${index < currentIndex ? 'bg-matcha/50' : 'bg-white/10'}
               `} />
             )}

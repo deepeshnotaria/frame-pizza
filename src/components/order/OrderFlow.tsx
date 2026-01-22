@@ -37,7 +37,7 @@ const pageVariants = {
   }),
 }
 
-export function OrderFlow({ pizzas, timeSlots }: OrderFlowProps) {
+export function OrderFlow({ pizzas, timeSlots, embedded = false }: OrderFlowProps & { embedded?: boolean }) {
   const { currentStep } = useOrderStore()
 
   // Track step direction for animation
@@ -60,20 +60,22 @@ export function OrderFlow({ pizzas, timeSlots }: OrderFlowProps) {
   }
 
   return (
-    <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
-      {/* Header with logo */}
-      <header className="max-w-4xl mx-auto mb-8">
-        <div className="flex items-center justify-between">
-          <a href="/" className="font-mono text-xl tracking-wider text-white hover:text-matcha transition-colors">
-            FRAME
-          </a>
-          {currentStep !== 'confirmation' && (
-            <span className="font-mono text-xs text-grey-dark uppercase tracking-wider">
-              Chicago, IL
-            </span>
-          )}
-        </div>
-      </header>
+    <div className={`py-8 px-4 sm:px-6 lg:px-8 ${embedded ? '' : 'min-h-screen'}`}>
+      {/* Header with logo - hide if embedded */}
+      {!embedded && (
+        <header className="max-w-4xl mx-auto mb-8">
+          <div className="flex items-center justify-between">
+            <a href="/" className="font-mono text-xl tracking-wider text-white hover:text-matcha transition-colors">
+              FRAME
+            </a>
+            {currentStep !== 'confirmation' && (
+              <span className="font-mono text-xs text-grey-dark uppercase tracking-wider">
+                Chicago, IL
+              </span>
+            )}
+          </div>
+        </header>
+      )}
 
       {/* Step indicator - hidden on confirmation */}
       {currentStep !== 'confirmation' && (
@@ -98,34 +100,36 @@ export function OrderFlow({ pizzas, timeSlots }: OrderFlowProps) {
         </AnimatePresence>
       </main>
 
-      {/* Footer */}
-      <footer className="max-w-4xl mx-auto mt-16 pt-8 border-t border-white/10">
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="font-mono text-[10px] text-grey-dark uppercase tracking-wider">
-            The Architecture of Pizza
-          </p>
-          <div className="flex items-center gap-6">
-            <a
-              href="#"
-              className="font-mono text-[10px] text-grey-dark uppercase tracking-wider hover:text-white transition-colors"
-            >
-              Terms
-            </a>
-            <a
-              href="#"
-              className="font-mono text-[10px] text-grey-dark uppercase tracking-wider hover:text-white transition-colors"
-            >
-              Privacy
-            </a>
-            <a
-              href="#"
-              className="font-mono text-[10px] text-grey-dark uppercase tracking-wider hover:text-white transition-colors"
-            >
-              Contact
-            </a>
+      {/* Footer - hide if embedded */}
+      {!embedded && (
+        <footer className="max-w-4xl mx-auto mt-16 pt-8 border-t border-white/10">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <p className="font-mono text-[10px] text-grey-dark uppercase tracking-wider">
+              The Architecture of Pizza
+            </p>
+            <div className="flex items-center gap-6">
+              <a
+                href="#"
+                className="font-mono text-[10px] text-grey-dark uppercase tracking-wider hover:text-white transition-colors"
+              >
+                Terms
+              </a>
+              <a
+                href="#"
+                className="font-mono text-[10px] text-grey-dark uppercase tracking-wider hover:text-white transition-colors"
+              >
+                Privacy
+              </a>
+              <a
+                href="#"
+                className="font-mono text-[10px] text-grey-dark uppercase tracking-wider hover:text-white transition-colors"
+              >
+                Contact
+              </a>
+            </div>
           </div>
-        </div>
-      </footer>
+        </footer>
+      )}
     </div>
   )
 }

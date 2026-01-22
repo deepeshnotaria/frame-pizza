@@ -4,12 +4,14 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Order, DailyPizza } from '@/types/database'
+import type { TimeSlot } from '@/types/database'
 
 // Extended Order type to include Pizza details if needed, 
 // though KDS usually just needs name/toppings.
 // We'll fetch daily_pizza to get the name.
 interface KDSOrder extends Order {
     daily_pizza?: DailyPizza
+    time_slots?: TimeSlot
     elapsed_minutes?: number
 }
 
@@ -21,7 +23,7 @@ export default function KDSDashboard() {
         if (!supabase) return
         const { data, error } = await supabase
             .from('orders')
-            .select('*, daily_pizzas(*)')
+            .select('*, daily_pizzas(*), time_slots(*)')
             .in('status', ['confirmed', 'ready']) // only show active kitchen orders
             .order('created_at', { ascending: true }) // Oldest first
 
@@ -84,11 +86,40 @@ export default function KDSDashboard() {
         }
     }
 
+    // Helper to group orders by time slot
+    const groupedOrders = orders.reduce((acc, order) => {
+        const timeSlot = order.time_slots
+        const timeKey = timeSlot ? `${timeSlot.start_time}` : 'Unscheduled'
+
+        if (!acc[timeKey]) {
+            acc[timeKey] = []
+        }
+        acc[timeKey].push(order)
+        return acc
+    }, {} as Record<string, KDSOrder[]>)
+
+    // Sort time keys
+    const sortedTimeKeys = Object.keys(groupedOrders).sort((a, b) => {
+        if (a === 'Unscheduled') return 1
+        if (b === 'Unscheduled') return -1
+        return a.localeCompare(b)
+    })
+
+    // Helper to format 24h time to 12h
+    const formatTime = (timeStr: string) => {
+        if (timeStr === 'Unscheduled') return timeStr
+        // timeStr is HH:MM:SS or HH:MM
+        const [h, m] = timeStr.split(':').map(Number)
+        const date = new Date()
+        date.setHours(h, m)
+        return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+    }
+
     return (
         <div>
-            <div className="flex justify-between items-center mb-8">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0 mb-8">
                 <h1 className="text-2xl font-light text-white">Kitchen Display System</h1>
-                <div className="flex gap-4 text-xs font-mono text-grey-dark">
+                <div className="flex flex-wrap gap-4 text-xs font-mono text-grey-dark">
                     <span className="flex items-center gap-2">
                         <span className="w-2 h-2 rounded-full bg-green-500"></span>
                         ACTIVE
@@ -112,68 +143,77 @@ export default function KDSDashboard() {
                     <p className="text-xs text-grey-darker mt-2">Waiting for new incoming tickets...</p>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                    <AnimatePresence>
-                        {orders.map((order) => {
-                            const elapsed = Math.floor((Date.now() - new Date(order.created_at).getTime()) / 60000)
-                            let statusColor = "border-matcha/30 bg-matcha/5"
-                            if (elapsed > 15) statusColor = "border-yellow-500/30 bg-yellow-500/5"
-                            if (elapsed > 25) statusColor = "border-red-500/30 bg-red-500/5 animate-pulse" // Critical
+                <div className="space-y-12">
+                    {sortedTimeKeys.map((timeKey) => (
+                        <div key={timeKey}>
+                            <h2 className="text-xl font-mono text-matcha mb-4 border-b border-white/10 pb-2 sticky top-[64px] bg-black/90 z-10 backdrop-blur-md py-2">
+                                {formatTime(timeKey)} <span className="text-grey-dark text-sm ml-2">({groupedOrders[timeKey].length} orders)</span>
+                            </h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                                <AnimatePresence>
+                                    {groupedOrders[timeKey].map((order) => {
+                                        const elapsed = Math.floor((Date.now() - new Date(order.created_at).getTime()) / 60000)
+                                        let statusColor = "border-matcha/30 bg-matcha/5"
+                                        if (elapsed > 15) statusColor = "border-yellow-500/30 bg-yellow-500/5"
+                                        if (elapsed > 25) statusColor = "border-red-500/30 bg-red-500/5 animate-pulse" // Critical
 
-                            return (
-                                <motion.div
-                                    key={order.id}
-                                    layout
-                                    initial={{ opacity: 0, scale: 0.9 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.9 }}
-                                    className={`p-4 border ${statusColor} relative flex flex-col justify-between min-h-[280px]`}
-                                >
-                                    <div>
-                                        <div className="flex justify-between items-start mb-4 pb-4 border-b border-white/10">
-                                            <div>
-                                                <span className="font-mono text-2xl font-bold block">#{order.batch_id.slice(-4)}</span>
-                                                <span className="text-xs text-grey-dark font-mono">{order.customer_name}</span>
-                                            </div>
-                                            <div className="text-right">
-                                                <span className="font-mono text-xl block">{elapsed}m</span>
-                                                <span className="text-[10px] text-grey-dark uppercase tracking-wider">{order.status}</span>
-                                            </div>
-                                        </div>
-
-                                        <div className="mb-4">
-                                            <h3 className="font-medium text-lg leading-tight mb-2">
-                                                {order.quantity}x {order.daily_pizza?.name || 'Pizza'}
-                                            </h3>
-                                            <ul className="text-sm text-grey space-y-1">
-                                                <li className="text-xs text-grey-dark italic">+ All Standard Toppings</li>
-                                                {/* In a real app, we'd list specific modifications here */}
-                                            </ul>
-                                        </div>
-                                    </div>
-
-                                    <div className="mt-4 pt-4 border-t border-white/10 grid grid-cols-2 gap-2">
-                                        {order.status === 'confirmed' && (
-                                            <button
-                                                onClick={() => updateStatus(order.id, 'ready')}
-                                                className="col-span-2 bg-matcha/20 hover:bg-matcha/30 text-matcha border border-matcha/50 py-3 text-sm font-mono uppercase tracking-wider transition-colors"
+                                        return (
+                                            <motion.div
+                                                key={order.id}
+                                                layout
+                                                initial={{ opacity: 0, scale: 0.9 }}
+                                                animate={{ opacity: 1, scale: 1 }}
+                                                exit={{ opacity: 0, scale: 0.9 }}
+                                                className={`p-4 border ${statusColor} relative flex flex-col justify-between min-h-[280px]`}
                                             >
-                                                Mark Ready
-                                            </button>
-                                        )}
-                                        {order.status === 'ready' && (
-                                            <button
-                                                onClick={() => updateStatus(order.id, 'completed')}
-                                                className="col-span-2 bg-white/10 hover:bg-white/20 text-white border border-white/20 py-3 text-sm font-mono uppercase tracking-wider transition-colors"
-                                            >
-                                                Complete
-                                            </button>
-                                        )}
-                                    </div>
-                                </motion.div>
-                            )
-                        })}
-                    </AnimatePresence>
+                                                <div>
+                                                    <div className="flex justify-between items-start mb-4 pb-4 border-b border-white/10">
+                                                        <div>
+                                                            <span className="font-mono text-2xl font-bold block">#{order.batch_id.slice(-4)}</span>
+                                                            <span className="text-xs text-grey-dark font-mono">{order.customer_name}</span>
+                                                        </div>
+                                                        <div className="text-right">
+                                                            <span className="font-mono text-xl block">{elapsed}m</span>
+                                                            <span className="text-[10px] text-grey-dark uppercase tracking-wider">{order.status}</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="mb-4">
+                                                        <h3 className="font-medium text-lg leading-tight mb-2">
+                                                            {order.quantity}x {order.daily_pizza?.name || 'Pizza'}
+                                                        </h3>
+                                                        <ul className="text-sm text-grey space-y-1">
+                                                            <li className="text-xs text-grey-dark italic">+ All Standard Toppings</li>
+                                                            {/* In a real app, we'd list specific modifications here */}
+                                                        </ul>
+                                                    </div>
+                                                </div>
+
+                                                <div className="mt-4 pt-4 border-t border-white/10 grid grid-cols-2 gap-2">
+                                                    {order.status === 'confirmed' && (
+                                                        <button
+                                                            onClick={() => updateStatus(order.id, 'ready')}
+                                                            className="col-span-2 bg-matcha/20 hover:bg-matcha/30 text-matcha border border-matcha/50 py-3 text-sm font-mono uppercase tracking-wider transition-colors"
+                                                        >
+                                                            Mark Ready
+                                                        </button>
+                                                    )}
+                                                    {order.status === 'ready' && (
+                                                        <button
+                                                            onClick={() => updateStatus(order.id, 'completed')}
+                                                            className="col-span-2 bg-white/10 hover:bg-white/20 text-white border border-white/20 py-3 text-sm font-mono uppercase tracking-wider transition-colors"
+                                                        >
+                                                            Complete
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </motion.div>
+                                        )
+                                    })}
+                                </AnimatePresence>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             )}
         </div>

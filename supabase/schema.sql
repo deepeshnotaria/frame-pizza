@@ -16,6 +16,7 @@ CREATE TABLE daily_pizzas (
     crust_type VARCHAR(100) DEFAULT 'Vegan Frico',
     max_batch INTEGER NOT NULL DEFAULT 40,
     current_batch INTEGER NOT NULL DEFAULT 0,
+    display_order INTEGER DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 

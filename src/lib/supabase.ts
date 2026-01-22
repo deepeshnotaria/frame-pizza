@@ -3,17 +3,35 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 
-// Create Supabase client - will be undefined if env vars not set
+// Create Supabase client with proper session persistence
 export const supabase = supabaseUrl && supabaseAnonKey
-  ? createClient(supabaseUrl, supabaseAnonKey)
+  ? createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+      storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+    }
+  })
   : null
+
+// Debug: Log session state on client load (can be removed in production)
+if (typeof window !== 'undefined' && supabase) {
+  supabase.auth.getSession().then(({ data, error }) => {
+    if (data.session) {
+      console.log('[Supabase] Active session:', data.session.user.email)
+    } else {
+      console.log('[Supabase] No active session')
+    }
+  })
+}
 
 // Helper functions for common operations - these use raw Supabase queries
 // In production, connect to actual Supabase instance
 // For demo, the app uses mockData.ts instead
 
 // Helper for local date string YYYY-MM-DD
-const getLocalDateString = (date: Date) => {
+export const getLocalDateString = (date: Date) => {
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, '0')
   const day = String(date.getDate()).padStart(2, '0')
@@ -28,6 +46,7 @@ export async function getTodaysPizzas() {
     .from('daily_pizzas')
     .select('*, pizza_toppings(*)')
     .eq('date', today)
+    .order('display_order', { ascending: true })
 
   if (error) throw error
   return data
@@ -42,6 +61,8 @@ export async function getAvailableTimeSlots(date: string) {
     .eq('date', date)
     .order('start_time', { ascending: true })
 
+  console.log('getAvailableTimeSlots response:', { date, count: data?.length, error })
+
   if (error) throw error
   return data
 }
@@ -51,29 +72,42 @@ export async function createOrder(orderData: {
   customer_email: string
   customer_phone: string
   time_slot_id: string
-  daily_pizza_id: string
-  quantity: number
+  cartItems: {
+    daily_pizza_id: string
+    quantity: number
+  }[]
 }) {
   if (!supabase) throw new Error('Supabase not configured')
 
-  // Create the order with batch ID
-  const { data: order, error: orderError } = await supabase
+  const batch_id = generateBatchId()
+  const ordersToInsert = orderData.cartItems.map(item => ({
+    customer_name: orderData.customer_name,
+    customer_email: orderData.customer_email,
+    customer_phone: orderData.customer_phone,
+    time_slot_id: orderData.time_slot_id,
+    daily_pizza_id: item.daily_pizza_id,
+    quantity: item.quantity,
+    status: 'confirmed',
+    batch_id
+  }))
+
+  // Create the orders with batch ID
+  const { data: orders, error: orderError } = await supabase
     .from('orders')
-    .insert({
-      ...orderData,
-      status: 'confirmed',
-      batch_id: generateBatchId(),
-    } as Record<string, unknown>)
+    .insert(ordersToInsert)
     .select()
-    .single()
 
   if (orderError) throw orderError
-  return order
+  // Return the first order as a reference, or you might want to return the whole list.
+  // For now, returning the one object helps compatibility with some checks, 
+  // but logically the "order" is the batch.
+  return orders?.[0]
 }
 
 export async function getOrderByBatchId(batchId: string) {
   if (!supabase) throw new Error('Supabase not configured')
 
+  // We want to fetch ALL items in the batch
   const { data, error } = await supabase
     .from('orders')
     .select(`
@@ -82,7 +116,9 @@ export async function getOrderByBatchId(batchId: string) {
       daily_pizzas(*, pizza_toppings(*))
     `)
     .eq('batch_id', batchId)
-    .single()
+
+  // Note: we removed .single() because a batch can have multiple rows now.
+  // Consumers should expect an array or handle the first item for "order details" and iterate for "items".
 
   if (error) throw error
   return data

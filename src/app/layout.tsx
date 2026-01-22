@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import { ToastProvider } from '@/components/ui/Toast'
 
 export const metadata: Metadata = {
   title: 'FRAME - The Architecture of Pizza',
@@ -29,6 +30,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen">
         {children}
+        <ToastProvider />
       </body>
     </html>
   )

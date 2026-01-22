@@ -44,16 +44,18 @@ function formatDate(): string {
 }
 
 export function OrderCertificate() {
-  const { completedOrder, selectedPizza, selectedTimeSlot, quantity, reset } = useOrderStore()
+  const { completedOrder, cart, selectedTimeSlot, reset } = useOrderStore()
 
   if (!completedOrder) {
     return null
   }
 
   // Use selected data or fall back to mock for display
-  const pizza = selectedPizza || mockTodaysPizza
   const timeSlot = selectedTimeSlot || mockTimeSlots[0]
-  const total = pizza.price * quantity * 1.1025 // Including tax
+
+  // Calculate total from cart
+  const subtotal = cart.reduce((total, item) => total + (item.pizza.price * item.quantity), 0)
+  const total = subtotal * 1.1025 // Including tax
 
   const handleNewOrder = () => {
     reset()
@@ -121,20 +123,25 @@ export function OrderCertificate() {
                 <h3 className="font-mono text-[10px] uppercase tracking-wider text-grey-dark mb-4">
                   Product Specification
                 </h3>
-                <div className="space-y-2">
-                  <div className="spec-row">
-                    <span className="spec-key">Item</span>
-                    <span className="spec-value">{pizza.name}</span>
-                  </div>
-                  <div className="spec-row">
-                    <span className="spec-key">Format</span>
-                    <span className="spec-value">10"×14" Detroit</span>
-                  </div>
-                  <div className="spec-row">
-                    <span className="spec-key">Quantity</span>
-                    <span className="spec-value">{quantity}</span>
-                  </div>
-                  <div className="spec-row">
+                <div className="space-y-4">
+                  {cart.map((item) => (
+                    <div key={item.pizza.id} className="pb-2 border-b border-white/5 last:border-0 last:pb-0">
+                      <div className="spec-row">
+                        <span className="spec-key">Item</span>
+                        <span className="spec-value">{item.pizza.name}</span>
+                      </div>
+                      <div className="spec-row">
+                        <span className="spec-key">Format</span>
+                        <span className="spec-value">10"×14" Detroit</span>
+                      </div>
+                      <div className="spec-row">
+                        <span className="spec-key">Quantity</span>
+                        <span className="spec-value">{item.quantity}</span>
+                      </div>
+                    </div>
+                  ))}
+
+                  <div className="spec-row pt-2 border-t border-white/10">
                     <span className="spec-key">Total</span>
                     <span className="spec-value text-matcha">${total.toFixed(2)}</span>
                   </div>
