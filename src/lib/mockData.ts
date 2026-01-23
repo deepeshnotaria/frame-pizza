@@ -10,6 +10,7 @@ export const mockTodaysPizza: DailyPizzaWithToppings = {
   hydration: '68%',
   fermentation_time: '72hrs @ 4°C',
   crust_type: 'Vegan Frico',
+  image_url: null,
   max_batch: 40,
   current_batch: 14,
   created_at: new Date().toISOString(),

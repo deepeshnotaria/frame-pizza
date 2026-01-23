@@ -50,7 +50,7 @@ export function PizzaImageEditor({ imageUrl, onUpdate, pizzaName, description, t
     }
 
     const handleGenerate = async () => {
-        if (generating) return
+        if (generating || !supabase) return
         setGenerating(true)
         try {
             const response = await fetch('/api/generate-image', {
