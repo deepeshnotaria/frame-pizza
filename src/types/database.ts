@@ -13,6 +13,7 @@ export interface Database {
           crust_type: string
           max_batch: number
           current_batch: number
+          image_url: string | null
           created_at: string
         }
         Insert: Omit<Database['public']['Tables']['daily_pizzas']['Row'], 'id' | 'created_at'>

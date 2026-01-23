@@ -205,6 +205,11 @@ export function DailyBlueprint({ pizzas }: DailyBlueprintProps) {
               }}
               className={`${hasMultiplePizzas ? 'px-14 md:px-16 cursor-grab active:cursor-grabbing' : ''}`}
             >
+              {selectedPizza.image_url && (
+                <div className="mb-6 aspect-[16/9] w-full max-w-2xl mx-auto rounded-sm overflow-hidden border border-white/10 glass-card">
+                  <img src={selectedPizza.image_url} alt={selectedPizza.name} className="w-full h-full object-cover" />
+                </div>
+              )}
               <h1 className="text-4xl md:text-5xl font-light tracking-tight select-none">
                 {selectedPizza.name}
               </h1>

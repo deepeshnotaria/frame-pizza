@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase'
 import { Button } from '@/components/ui/Button'
 import { motion } from 'framer-motion'
 import { PizzaPicker } from '@/components/admin/menu/PizzaPicker'
+import { PizzaImageEditor } from '@/components/admin/menu/PizzaImageEditor'
 import type { DailyPizza, PizzaTopping, DailyPizzaWithToppingsAndInventory, InventoryItem, ForecastSettings, RecipeWithIngredients } from '@/types/database'
 import { Select } from '@/components/ui/Select'
 import { DndContext, closestCenter, KeyboardSensor, MouseSensor, TouchSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
@@ -280,6 +281,7 @@ export default function PizzaEditor() {
             hydration: pizza.hydration,
             fermentation_time: pizza.fermentation_time,
             crust_type: pizza.crust_type,
+            image_url: pizza.image_url,
             toppings: pizza.pizza_toppings?.map(t => ({
                 name: t.name,
                 category: t.category,
@@ -601,6 +603,15 @@ export default function PizzaEditor() {
                                         onChange={e => updatePizza('description', e.target.value)}
                                     />
                                 </div>
+
+                                <PizzaImageEditor
+                                    imageUrl={activePizza.image_url || null}
+                                    onUpdate={(url) => updatePizza('image_url', url)}
+                                    pizzaName={activePizza.name || ''}
+                                    description={activePizza.description || ''}
+                                    toppings={activePizza.toppings.map(t => t.name || '').filter(Boolean)}
+                                />
+
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <label className="text-xs text-grey uppercase block mb-1">Price ($)</label>
